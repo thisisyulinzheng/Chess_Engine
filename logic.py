@@ -117,8 +117,10 @@ def traverse(node, color, depth):
                 #this means it was pruned,
                 #so it reverses the position and returns a value it got from the pruning to its parent
                 node.total = node.temp
-                reverse_position(node.cb, node.move, node.piece)
+                reverse_position(node.cb, move, moved_piece)
                 return (node.total)
+
+            reverse_position(node.cb, move, moved_piece)
         # from here, pruning has failed, so it has to take the min/max of its values and return that
         if (color == 0):
             node.total = min(node.vals)
@@ -129,7 +131,6 @@ def traverse(node, color, depth):
     else:
         #max depth is reached here so it sums the position, reverses and returns it
         node.total = numpy.sum(numpy.sum(node.cb))
-        reverse_position(node.cb, node.move, node.piece)
         return node.total
 
 def choose_move(node):
