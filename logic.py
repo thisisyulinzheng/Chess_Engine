@@ -96,19 +96,25 @@ def prune(node, color):
             p.pruned = True
 
 def traverse(node, color, depth):
-    color = color % 2
+    color = color % 2 #checks if white or black (min or maxing)
     if (depth < 6):
+        #piece_map_move() generates a list of moves and this loops through it
         for move in (piece_map_move(node.cb, color)):
+            #moved_piece is the piece used for reversing a position
             moved_piece = (node.cb)[move[2]][move[3]]
+            #creates a child node and makes a move at the same time
             child = Position(make_move(node.cb, move), node, move, moved_piece)
-            (node.front).append(child)
+            (node.front).append(child) #adds child to the front of the node
             prune(child, color)
-            if (not node.pruned):
+            if (not node.pruned): #if it isn't pruned, then it goes deeper into the tree
                 node.vals.append(traverse(child, color + 1, depth + 1))
             else:
+                #this means it was pruned,
+                #so it reverses the position and returns a value it got from the pruning to its parent
                 node.total = node.temp
                 reverse_position(node.cb, node.move, node.piece)
                 return (node.total)
+        # from here, pruning has failed, so it has to take the min/max of its values and return that
         if (color == 0):
             node.total = min(node.vals)
             return (node.total)
@@ -116,6 +122,7 @@ def traverse(node, color, depth):
             node.total = max(node.vals)
             return (node.total)
     else:
+        #max depth is reached here so it sums the position, reverses and returns it
         node.total = numpy.sum(numpy.sum(node.cb))
         reverse_position(node.cb, node.move, node.piece)
         return node.total
