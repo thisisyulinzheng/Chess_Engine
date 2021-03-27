@@ -98,20 +98,10 @@ def prune(node, color):
 def traverse(node, color, depth):
     color = color % 2
     if (depth < 6):
-        print("-----------------------------")
-        print("Depth:",depth)
-        pos = to_fen(node.cb)
-        enc = pos.encode()
-        #print((hashlib.sha256(enc)).hexdigest())
-        print("\n\n")
-        print_board(node.cb)
-        print("-----------------------------")
-
         for move in (piece_map_move(node.cb, color)):
             moved_piece = (node.cb)[move[2]][move[3]]
             child = Position(make_move(node.cb, move), node, move, moved_piece)
             (node.front).append(child)
-            #print()
             prune(child, color)
             if (not node.pruned):
                 node.vals.append(traverse(child, color + 1, depth + 1))
@@ -126,8 +116,8 @@ def traverse(node, color, depth):
             node.total = max(node.vals)
             return (node.total)
     else:
-        reverse_position(node.cb, node.move, node.piece)
         node.total = numpy.sum(numpy.sum(node.cb))
+        reverse_position(node.cb, node.move, node.piece)
         return node.total
 
 def choose_move(node):
