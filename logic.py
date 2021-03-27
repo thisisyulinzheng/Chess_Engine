@@ -63,35 +63,40 @@ def reverse_position(chessboard, move, piece):
     return chessboard
 
 def prune(node, color):
-    value = node.total
-    temp_node = node
-    new_node = node.back
-    to_prune = False
+    # highly recommend drawing a diagram and looking at this function at the same time
+    value = node.total # node.total is basically summing all the pieces
+    temp_node = node # creates a temp because the node reference will be modified
+    new_node = node.back # reference to the parent node
+    to_prune = False # default prunability is false
     p_list = []
-    new_color = color
-    if (new_node != 0):
-        while (new_node.back != 0):
-            if (value != '+'):
+    new_color = color # new color variable because we're going up the tree and color changes
+    if (new_node != 0): #checks if you're the head node and went back
+        while (new_node.back != 0): #going back up the tree until you hit the head node
+            if (value != '+'): # if the node has some value, then we proceed (otherwise you can't compare)
                 i = 0
+                #kinda of hard to explain how this loops works without a diagram
+                #basically it goes back to the parent and loops through the children until you hit the child that is being analyzed
                 while ((new_node.back.front)[i] != new_node):
-                    if ((new_node.back.front)[i].total != '+'):
+                    if ((new_node.back.front)[i].total != '+'): #again makes sure that there's actually a value to compare
+                        #we add to the list its parent node (and the parent's parent node and so on) so we can prune them all in one go
                         p_list.append(new_node)
                         p_list.append(temp_node)
+                        #these if statements check if we should prune by comparing summed values
                         if (new_color % 2 == 0):
                             if (value < (new_node.back.front)[i].total):
                                 to_prune = True
                         else:
                             if (value > (new_node.back.front)[i].total):
                                 to_prune = True
-                    new_node.temp = value
+                    new_node.temp = value #sets the parent node to a temp value so we can compare further up the tree
                     i += 1
             new_color += 1
-            if (new_node.back == 0):
+            if (new_node.back == 0): #if it hits the head node by accident
                 break
-            else:
+            else: #moves up the tree
                 new_node = new_node.back
                 temp_node = temp_node.back
-    for p in p_list:
+    for p in p_list: #prunes every parent and parent's parent node and so on
         if (to_prune):
             p.pruned = True
 
